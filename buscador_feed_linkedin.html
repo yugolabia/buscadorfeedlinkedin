@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YUGOLABIA - Buscador LinkedIn</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+    h2 {
+      text-align: center;
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      color: #333;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 2rem;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+    }
+    input[type="text"], select {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-size: 1rem;
+    }
+    .keyword-list {
+      margin-bottom: 15px;
+      min-height: 20px;
+    }
+    .keyword-item {
+      display: inline-flex;
+      align-items: center;
+      background-color: #e6f0fa;
+      padding: 5px 10px;
+      margin: 5px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .keyword-item button {
+      background-color: #ff4d4f;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      margin-left: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+    .keyword-item button:hover {
+      background-color: #d93638;
+    }
+    .button-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    button {
+      padding: 0.75rem;
+      border: 2px solid #000;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      background-color: white;
+      color: #000;
+    }
+    button.clear, button.save {
+      background-color: white;
+      color: #000;
+      border: 2px solid #000;
+    }
+    button[type="submit"] {
+      width: 100%;
+      background-color: #000;
+      color: white;
+      padding: 1rem;
+      font-size: 1rem;
+      margin-top: 1rem;
+      border: 2px solid #000;
+    }
+    button:hover {
+      opacity: 0.8;
+    }
+    button:disabled {
+      background-color: #ccc;
+      border-color: #ccc;
+      color: white;
+      cursor: not-allowed;
+    }
+    .date-filters {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .date-filter {
+      padding: 0.5rem;
+      text-align: center;
+      background-color: white;
+      border: 2px solid #000;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      color: #000;
+    }
+    .date-filter.active {
+      background-color: #000;
+      color: white;
+      border-color: #000;
+    }
+    .spinner {
+      display: none;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #0073b1;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      margin: 10px auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .logo-container {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .logo-container img {
+      max-width: 100%;
+      height: auto;
+      margin-bottom: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo-container">
+<a href="https://ibb.co/xqtKdgBk"><img src="https://i.ibb.co/LdXDHgcF/Yugo-Labia-Email-Header.png" alt="Yugo-Labia-Email-Header" border="0"></a>
+      <h2>BUSCADOR DE TRABAJOS EN EL FEED DE LINKEDIN</h2>
+      <p class="subtitle">AGREGÁ PALABRAS CLAVE Y HACÉ TU BÚSQUEDA.</p>
+    </div>
+    
+    <form id="searchForm">
+      <label for="keywordSelect">PALABRAS CLAVE</label>
+      <select id="keywordSelect">
+        <option value="">Elegí Palabras Clave</option>
+        <optgroup label="General">
+          <option value="remote">Remote</option>
+          <option value="hiring">Hiring</option>
+          <option value="product">Product</option>
+          <option value="manager">Manager</option>
+          <option value="project">Project</option>
+          <option value="analyst">Analyst</option>
+          <option value="ux">UX</option>
+        </optgroup>
+      </select>
+
+      <div id="keywordList" class="keyword-list"></div>
+
+      <label for="countrySelect">DÓNDE</label>
+      <select id="countrySelect">
+        <option value="">Elegí un lugar</option>
+        <option value="Argentina">Argentina</option>
+        <option value="LATAM">LATAM</option>
+        <option value="USA">USA</option>
+      </select>
+
+      <label for="customKeywords">BÚSQUEDA PERSONALIZADA</label>
+      <input type="text" id="customKeywords" placeholder="Escribí tu búsqueda...">
+
+      <label for="savedSearches">BÚSQUEDAS GUARDADAS</label>
+      <select id="savedSearches">
+        <option value="">Elegí una búsqueda guardada</option>
+      </select>
+
+      <div class="button-group">
+        <button type="button" class="clear" id="clearButton">Borrar Todo</button>
+        <button type="button" class="save" id="saveSearch">Guardar Búsqueda</button>
+      </div>
+
+      <label>FECHA DE PUBLICACIÓN</label>
+      <div class="date-filters">
+        <div class="date-filter active" data-value="past-24h">Últimas 24 horas</div>
+        <div class="date-filter" data-value="past-week">Última Semana</div>
+        <div class="date-filter" data-value="past-month">Último Mes</div>
+        <div class="date-filter" data-value="any-time">Any Time</div>
+      </div>
+
+      <select id="datePosted" style="display: none;">
+        <option value="past-24h">Últimas 24 horas</option>
+        <option value="past-week">Última Semana</option>
+        <option value="past-month">Último Mes</option>
+        <option value="any-time">Any Time</option>
+      </select>
+
+      <button type="submit" id="submitButton" disabled>Buscar</button>
+      <div id="spinner" class="spinner"></div>
+    </form>
+  </div>
+
+  <script>
+    const keywordSelect = document.getElementById('keywordSelect');
+    const countrySelect = document.getElementById('countrySelect');
+    const keywordList = document.getElementById('keywordList');
+    const customKeywordsInput = document.getElementById('customKeywords');
+    const savedSearchesSelect = document.getElementById('savedSearches');
+    const clearButton = document.getElementById('clearButton');
+    const saveSearchButton = document.getElementById('saveSearch');
+    const submitButton = document.getElementById('submitButton');
+    const spinner = document.getElementById('spinner');
+    let selectedKeywords = [];
+
+    // Update submit button state
+    function updateSubmitButton() {
+      const customKeywords = customKeywordsInput.value.trim();
+      submitButton.disabled = selectedKeywords.length === 0 && !customKeywords;
+    }
+
+    // Update displayed keyword list
+    function updateKeywordList() {
+      keywordList.innerHTML = selectedKeywords
+        .map(keyword => `
+          <span class="keyword-item">
+            ${keyword}
+            <button type="button" onclick="removeKeyword('${keyword}')">✕</button>
+          </span>
+        `)
+        .join('');
+      updateSubmitButton();
+    }
+
+    // Remove keyword from list
+    window.removeKeyword = function(keyword) {
+      selectedKeywords = selectedKeywords.filter(k => k !== keyword);
+      updateKeywordList();
+    };
+
+    // Add keyword from dropdown
+    keywordSelect.addEventListener('change', function() {
+      const keyword = this.value;
+      if (keyword && !selectedKeywords.includes(keyword)) {
+        selectedKeywords.push(keyword);
+        updateKeywordList();
+      }
+      this.value = '';
+    });
+
+    // Add country to keywords
+    countrySelect.addEventListener('change', function() {
+      const country = this.value;
+      if (country && !selectedKeywords.includes(country)) {
+        selectedKeywords.push(country);
+        updateKeywordList();
+      }
+      this.value = '';
+    });
+
+    // Load saved searches
+    function loadSavedSearches() {
+      const saved = JSON.parse(localStorage.getItem('savedSearches') || '[]');
+      savedSearchesSelect.innerHTML = '<option value="">Elegí una Búsqueda guardada</option>' +
+        saved.map((search, index) => `<option value="${index}">${search.join(', ')}</option>`).join('');
+    }
+
+    // Save current search
+    saveSearchButton.addEventListener('click', function() {
+      const customKeywords = customKeywordsInput.value.trim();
+      const allKeywords = customKeywords ? [...selectedKeywords, ...customKeywords.split(/\s+/)] : selectedKeywords;
+      if (allKeywords.length === 0) {
+        alert('Please add keywords to save a search.');
+        return;
+      }
+      const saved = JSON.parse(localStorage.getItem('savedSearches') || '[]');
+      saved.push(allKeywords);
+      localStorage.setItem('savedSearches', JSON.stringify(saved));
+      loadSavedSearches();
+      alert('Search saved!');
+    });
+
+    // Load saved search
+    savedSearchesSelect.addEventListener('change', function() {
+      if (this.value) {
+        const saved = JSON.parse(localStorage.getItem('savedSearches') || '[]');
+        selectedKeywords = saved[parseInt(this.value)] || [];
+        customKeywordsInput.value = '';
+        updateKeywordList();
+        this.value = '';
+      }
+    });
+
+    // Clear all
+    clearButton.addEventListener('click', function() {
+      selectedKeywords = [];
+      customKeywordsInput.value = '';
+      countrySelect.value = '';
+      document.getElementById('datePosted').value = 'past-24h';
+      updateKeywordList();
+    });
+
+    // Handle form submission
+    document.getElementById('searchForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const customKeywords = customKeywordsInput.value.trim();
+      const allKeywords = customKeywords ? [...selectedKeywords, ...customKeywords.split(/\s+/)] : selectedKeywords;
+      if (allKeywords.length === 0) {
+        alert('Por favor seleccioná al menos una palabra clave o ingresá palabras clave personalizadas.');
+        return;
+      }
+      submitButton.disabled = true;
+      spinner.style.display = 'block';
+      
+      setTimeout(() => {
+        const formattedKeywords = allKeywords
+          .map(word => encodeURIComponent(word))
+          .join('%20AND%20');
+        const datePosted = document.getElementById('datePosted').value;
+        const url = `https://www.linkedin.com/search/results/content/?datePosted=%22${datePosted}%22&keywords=${formattedKeywords}&sid=d%3A*`;
+        window.open(url, '_blank');
+        spinner.style.display = 'none';
+        submitButton.disabled = false;
+      }, 500);
+    });
+
+    // Initialize date filters
+    const dateFilters = document.querySelectorAll('.date-filter');
+    const datePostedSelect = document.getElementById('datePosted');
+
+    dateFilters.forEach(filter => {
+      filter.addEventListener('click', () => {
+        dateFilters.forEach(f => f.classList.remove('active'));
+        filter.classList.add('active');
+        datePostedSelect.value = filter.dataset.value;
+      });
+    });
+
+    // Initialize saved searches and button state
+    loadSavedSearches();
+    updateSubmitButton();
+    customKeywordsInput.addEventListener('input', updateSubmitButton);
+  </script>
+</body>
+</html>
